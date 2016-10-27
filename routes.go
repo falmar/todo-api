@@ -4,8 +4,21 @@
 
 package main
 
-import "github.com/julienschmidt/httprouter"
+import (
+	"context"
+	"net/http"
+
+	"github.com/julienschmidt/httprouter"
+)
 
 func setRoutes(r *httprouter.Router) {
 
+}
+
+func wrapperHandler(h http.Handler) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+		ctx := context.WithValue(r.Context(), "params", ps)
+
+		h.ServeHTTP(w, r.WithContext(ctx))
+	}
 }
