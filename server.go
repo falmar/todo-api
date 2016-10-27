@@ -15,9 +15,13 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
+	// load Enverionment variables
+	if err := godotenv.Load(); err != nil {
+		log.Fatal(err)
+	}
 
-	if err != nil {
+	// set up database connection
+	if err := setUpDB(); err != nil {
 		log.Fatal(err)
 	}
 
