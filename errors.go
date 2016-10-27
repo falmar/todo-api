@@ -7,5 +7,4 @@ package main
 import "errors"
 
 // json
-
 var errJSONMalformed = errors.New("Malformed json")

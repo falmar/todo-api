@@ -9,10 +9,13 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/justinas/alice"
 )
 
 func setRoutes(r *httprouter.Router) {
+	common := alice.New(corsMiddleware)
 
+	r.POST("/user", wrapperHandler(common.ThenFunc(registerUserHandler)))
 }
 
 func wrapperHandler(h http.Handler) httprouter.Handle {
