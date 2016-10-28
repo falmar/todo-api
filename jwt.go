@@ -7,21 +7,27 @@ package main
 import (
 	"errors"
 	"fmt"
+	"strings"
+	"time"
 
-	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go"
 )
 
 // MyClaims custom claim to use in this app
 type MyClaims struct {
+	jwt.StandardClaims
 	User  User   `json:"user"`
 	Scope string `json:"scope"`
-	jwt.StandardClaims
 }
 
 // Valid implement interface jwt.Claims
 func (mc MyClaims) Valid() error {
 	if mc.Scope == "" {
 		return errors.New("Scope can not be empty")
+	}
+
+	if mc.ExpiresAt < time.Now().Unix() {
+		return errors.New("JWT expired")
 	}
 
 	return nil
@@ -44,4 +50,16 @@ func parseToken(tokenString string, claims jwt.Claims, secretKey []byte) (*jwt.T
 	}
 
 	return jwt.ParseWithClaims(tokenString, claims, keyFunc)
+}
+
+func isAllowedScope(s, ss string) bool {
+	scopeSlice := strings.Split(ss, ",")
+
+	for _, rs := range scopeSlice {
+		if rs == s {
+			return true
+		}
+	}
+
+	return false
 }

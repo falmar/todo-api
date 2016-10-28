@@ -8,7 +8,9 @@ import (
 	"database/sql"
 	"net/http"
 	"os"
+	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -65,6 +67,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	myClaims := MyClaims{
 		User:  *user,
 		Scope: "todo:create,todo:update,todo:delete",
+		StandardClaims: jwt.StandardClaims{
+			IssuedAt:  time.Now().Unix(),
+			Issuer:    os.Getenv("JWT_ISSUER"),
+			ExpiresAt: time.Now().Add(time.Hour * 1).Unix(),
+		},
 	}
 
 	token, err := generateToken(myClaims, []byte(os.Getenv("JWT_KEY")))

@@ -17,6 +17,7 @@ var errInternalServerError = errors.New(http.StatusText(http.StatusInternalServe
 var errBadRequest = errors.New(http.StatusText(http.StatusBadRequest))
 var errNotFound = errors.New(http.StatusText(http.StatusNotFound))
 var errUnauthorized = errors.New(http.StatusText(http.StatusUnauthorized))
+var errForbidden = errors.New(http.StatusText(http.StatusForbidden))
 
 // json
 var errMalformedJSON = errors.New("Malformed JSON")
