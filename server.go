@@ -15,23 +15,23 @@ import (
 )
 
 func main() {
-	// load Enverionment variables
+	// load Environment variables
 	if err := godotenv.Load(); err != nil {
 		log.Fatal(err)
 	}
+
+	addr := ":" + os.Getenv("PORT")
 
 	// set up database connection
 	if err := setUpDB(); err != nil {
 		log.Fatal(err)
 	}
 
+	// set routes
 	router := httprouter.New()
-
 	setRoutes(router)
 
-	addr := ":" + os.Getenv("PORT")
-
+	// start listening
 	log.Println(fmt.Sprintf("Listening at %s", addr))
-
 	http.ListenAndServe(addr, router)
 }

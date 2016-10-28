@@ -4,7 +4,20 @@
 
 package main
 
-import "errors"
+import (
+	"errors"
+	"net/http"
+)
+
+// bcrypt
+var errEncryptPassword = errors.New("Error ocurred trying to encrypt password")
+
+// http
+var errInternalServerError = errors.New(http.StatusText(http.StatusInternalServerError))
+var errBadRequest = errors.New(http.StatusText(http.StatusBadRequest))
 
 // json
-var errJSONMalformed = errors.New("Malformed json")
+var errMalformedJSON = errors.New("Malformed JSON")
+
+// db
+var errUniqueConstraintViolationDB = errors.New("Unique Contraint Violation")
