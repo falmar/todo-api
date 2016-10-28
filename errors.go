@@ -24,3 +24,6 @@ var errJSONContentType = errors.New("Content-Type: application/json required")
 
 // db
 var errUniqueConstraintViolationDB = errors.New("Unique Contraint Violation")
+
+// jwt
+var errJWTNotFound = errors.New("JWT not found")
