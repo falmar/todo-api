@@ -11,7 +11,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func registerUserHandler(w http.ResponseWriter, r *http.Request) {
+func userCreateHandler(w http.ResponseWriter, r *http.Request) {
 	// check content type is application/json
 	if ct := r.Header.Get("Content-Type"); ct != "application/json" {
 		jsonErrorEncode(w, errJSONContentType, http.StatusBadRequest, errJSONContentType)
