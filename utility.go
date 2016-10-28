@@ -27,8 +27,8 @@ func jsonErrorEncode(w http.ResponseWriter, err error, code int, originalError e
 
 	jsonEncode(w, map[string]map[string]string{
 		"message": map[string]string{
-			"type":    "ERROR",
-			"message": err.Error(),
+			"type":  "ERROR",
+			"title": err.Error(),
 		},
 	})
 }

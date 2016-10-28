@@ -27,7 +27,7 @@ func registerUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// decode request body
 	if err := jsonDecode(r.Body, &request); err != nil {
-		jsonErrorEncode(w, errMalformedJSON, http.StatusInternalServerError, err)
+		jsonErrorEncode(w, errMalformedJSON, http.StatusBadRequest, err)
 		return
 	}
 
@@ -72,11 +72,9 @@ func registerUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	// set user into response
 	response["user"] = user
-	response["message"] = []map[string]string{
-		map[string]string{
-			"type":    "SUCCESS",
-			"message": "User successfully created",
-		},
+	response["message"] = map[string]string{
+		"type":  "SUCCESS",
+		"title": "User successfully created",
 	}
 
 	// set response header

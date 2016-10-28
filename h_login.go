@@ -76,6 +76,10 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	response["claims"] = myClaims
 	response["token"] = token
+	response["message"] = map[string]string{
+		"title": "User successfully log in",
+		"type":  "SUCCESS",
+	}
 
 	w.Header().Set("Content-Type", "application/json")
 
