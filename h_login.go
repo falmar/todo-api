@@ -7,6 +7,7 @@ package main
 import (
 	"database/sql"
 	"net/http"
+	"os"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -61,11 +62,20 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// set claims
-	response["claims"] = map[string]interface{}{
-		"user":  user,
-		"scope": "todo:create,todo:update,todo:delete",
+	myClaims := MyClaims{
+		User:  *user,
+		Scope: "todo:create,todo:update,todo:delete",
 	}
-	response["token"] = ""
+
+	token, err := generateToken(myClaims, []byte(os.Getenv("JWT_KEY")))
+
+	if err != nil {
+		jsonErrorEncode(w, errInternalServerError, http.StatusInternalServerError, err)
+		return
+	}
+
+	response["claims"] = myClaims
+	response["token"] = token
 
 	w.Header().Set("Content-Type", "application/json")
 
