@@ -11,7 +11,7 @@ Rrequests and Responses will always be Content-Type: application/json
 
 ## Login
 
-**Request**
+Request
 ```
 POST end-point/login/
 Accept: application/json
@@ -25,10 +25,10 @@ Content-Type: application/json
 }
 ```
 
-**Response**
+Response
 
 ```
-200 Created
+200 OK
 Content-Type: application/json
 ```
 ```json
