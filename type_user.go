@@ -106,6 +106,18 @@ func (u *User) updateDB(db *sql.DB) (int64, error) {
 	return res.RowsAffected()
 }
 
+func (u *User) deleteDB(db *sql.DB) (int64, error) {
+	ssql := fmt.Sprintf(`DELETE FROM %s.user WHERE id = $1`, os.Getenv("DB_SCHEMA"))
+
+	res, err := db.Exec(ssql, u.ID)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return res.RowsAffected()
+}
+
 func (u *User) validateDB(db *sql.DB) error {
 	var id int64
 	var row *sql.Row
