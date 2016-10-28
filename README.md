@@ -56,9 +56,9 @@ Possibles responses:
 | HTTP Code | reponse | description |
 |------|---------|-------------|
 | 200  | message, claims, token | successfully created user|
-| 404 | message | user does not exist |
-| 401 | message | authentication failed |
 | 400  | message | content-type is not application/json, request body empty, missing field |
+| 401 | message | authentication failed |
+| 404 | message | user does not exist |
 | 500  | message | - |
 
 I'm returning the claims as well because probably the client application needs some of them basically the user and scope
