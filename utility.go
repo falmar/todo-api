@@ -11,6 +11,10 @@ import (
 	"net/http"
 )
 
+func isJSONContentType(r *http.Request) bool {
+	return r.Header.Get("Content-Type") == "application/json"
+}
+
 func jsonDecode(r io.Reader, into interface{}) error {
 	return json.NewDecoder(r).Decode(into)
 }

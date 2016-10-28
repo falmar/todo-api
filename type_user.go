@@ -74,9 +74,36 @@ func (u *User) insertDB(db *sql.DB) error {
 	return nil
 }
 
-func (u *User) updateDB(db *sql.DB) error {
+func (u *User) updateDB(db *sql.DB) (int64, error) {
+	hasPassword := u.Password != ""
 
-	return nil
+	if hasPassword {
+		ssql := fmt.Sprintf(`UPDATE %s.user
+			SET name = $2, email = $3, password = $4, updated_at = $5
+			WHERE id = $1
+			`, os.Getenv("DB_SCHEMA"))
+
+		res, err := db.Exec(ssql, u.ID, u.Name, u.Email, u.Password, u.UpdatedAt)
+
+		if err != nil {
+			return 0, err
+		}
+
+		return res.RowsAffected()
+	}
+
+	ssql := fmt.Sprintf(`UPDATE %s.user
+		SET name = $2, email = $3, updated_at = $4
+		WHERE id = $1
+		`, os.Getenv("DB_SCHEMA"))
+
+	res, err := db.Exec(ssql, u.ID, u.Name, u.Email, u.UpdatedAt)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return res.RowsAffected()
 }
 
 func (u *User) validateDB(db *sql.DB) error {

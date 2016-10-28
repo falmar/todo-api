@@ -23,8 +23,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	}{}
 
 	// check request content-type is json
-	if ct := r.Header.Get("Content-Type"); ct != "application/json" {
+	if !isJSONContentType(r) {
 		jsonErrorEncode(w, errJSONContentType, http.StatusBadRequest, errJSONContentType)
+		return
 	}
 
 	// decode request

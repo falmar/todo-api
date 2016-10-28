@@ -13,7 +13,7 @@ import (
 
 func userCreateHandler(w http.ResponseWriter, r *http.Request) {
 	// check content type is application/json
-	if ct := r.Header.Get("Content-Type"); ct != "application/json" {
+	if !isJSONContentType(r) {
 		jsonErrorEncode(w, errJSONContentType, http.StatusBadRequest, errJSONContentType)
 		return
 	}
@@ -46,12 +46,12 @@ func userCreateHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// password encrypt
-	if np, err := bcrypt.GenerateFromPassword([]byte(request.Password), 10); err != nil {
+	np, err := bcrypt.GenerateFromPassword([]byte(request.Password), 10)
+	if err != nil {
 		jsonErrorEncode(w, errEncryptPassword, http.StatusInternalServerError, err)
 		return
-	} else if err == nil {
-		user.Password = string(np)
 	}
+	user.Password = string(np)
 
 	// validate user is correctly formed for insert
 	if err := user.validateDB(postgres); err != nil {
