@@ -15,6 +15,7 @@ import (
 func setRoutes(r *httprouter.Router) {
 	common := alice.New(corsMiddleware)
 
+	r.POST("/login", wrapperHandler(common.ThenFunc(loginHandler)))
 	r.POST("/user", wrapperHandler(common.ThenFunc(registerUserHandler)))
 }
 

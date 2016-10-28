@@ -15,9 +15,12 @@ var errEncryptPassword = errors.New("Error ocurred trying to encrypt password")
 // http
 var errInternalServerError = errors.New(http.StatusText(http.StatusInternalServerError))
 var errBadRequest = errors.New(http.StatusText(http.StatusBadRequest))
+var errNotFound = errors.New(http.StatusText(http.StatusNotFound))
+var errUnauthorized = errors.New(http.StatusText(http.StatusUnauthorized))
 
 // json
 var errMalformedJSON = errors.New("Malformed JSON")
+var errJSONContentType = errors.New("Content-Type: application/json required")
 
 // db
 var errUniqueConstraintViolationDB = errors.New("Unique Contraint Violation")

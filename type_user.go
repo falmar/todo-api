@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // User struct
@@ -19,6 +21,41 @@ type User struct {
 	Password  string    `json:"-"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+}
+
+func (u User) getByID(id int64, db *sql.DB) (*User, error) {
+	user := &User{}
+
+	ssql := fmt.Sprintf(`
+		SELECT u.id, u.name, u.email, u.created_at, u.updated_at
+		FROM %s.user u
+		WHERE u.id = $1
+		`, os.Getenv("DB_SCHEMA"))
+
+	err := db.QueryRow(ssql, id).Scan(&user.ID, &user.Name, &user.Email, &user.CreatedAt, &user.UpdatedAt)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (u User) authenticate(e, p string, db *sql.DB) (int64, error) {
+	var hash string
+	var id int64
+
+	ssql := fmt.Sprintf("SELECT u.id, u.password FROM %s.user u WHERE u.email = $1", os.Getenv("DB_SCHEMA"))
+
+	if err := db.QueryRow(ssql, e).Scan(&id, &hash); err != nil {
+		return 0, err
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(p)); err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }
 
 func (u *User) insertDB(db *sql.DB) error {
@@ -48,14 +85,14 @@ func (u *User) validateDB(db *sql.DB) error {
 	isUpdate := u.ID > 0
 
 	if isUpdate {
-		ssql := fmt.Sprintf(`SELECT id
+		ssql := fmt.Sprintf(`SELECT u.id
 								FROM %s.user u
 								WHERE u.id != $1 AND
 								u.email = $2`, os.Getenv("DB_SCHEMA"))
 
 		row = db.QueryRow(ssql, u.ID, u.Email)
 	} else {
-		ssql := fmt.Sprintf("SELECT id FROM %s.user u WHERE email = $1", os.Getenv("DB_SCHEMA"))
+		ssql := fmt.Sprintf("SELECT u.id FROM %s.user u WHERE email = $1", os.Getenv("DB_SCHEMA"))
 		row = db.QueryRow(ssql, u.Email)
 	}
 

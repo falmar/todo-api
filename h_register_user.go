@@ -5,7 +5,6 @@
 package main
 
 import (
-	"errors"
 	"net/http"
 	"time"
 
@@ -15,8 +14,7 @@ import (
 func registerUserHandler(w http.ResponseWriter, r *http.Request) {
 	// check content type is application/json
 	if ct := r.Header.Get("Content-Type"); ct != "application/json" {
-		err := errors.New("Content-Type: application/json required")
-		jsonErrorEncode(w, err, http.StatusBadRequest, err)
+		jsonErrorEncode(w, errJSONContentType, http.StatusBadRequest, errJSONContentType)
 		return
 	}
 
