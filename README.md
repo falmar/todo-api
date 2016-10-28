@@ -11,13 +11,12 @@ Rrequests and Responses will always be Content-Type: application/json
 
 ## Login
 
+**Request**
 ```
 POST end-point/login/
 Accept: application/json
 Content-Type: application/json
 ```
-
-**Request body**
 
 ```json
 {
@@ -26,17 +25,7 @@ Content-Type: application/json
 }
 ```
 
-**Response body**
-
-possibles responses codes:
-
-| Code | reponse | description |
-|------|---------|-------------|
-| 200  | message, claims, token | successfully created user|
-| 404 | message | user does not exist |
-| 401 | message | authentication failed |
-| 400  | message | content-type is not application/json, request body empty, missing field |
-| 500  | message | - |
+**Response**
 
 ```
 200 Created
@@ -62,20 +51,28 @@ Content-Type: application/json
 }
 ```
 
-I'm returning the claims as well because probably the client application needs some of them basically the user and scope
+Possibles responses:
 
+| HTTP Code | reponse | description |
+|------|---------|-------------|
+| 200  | message, claims, token | successfully created user|
+| 404 | message | user does not exist |
+| 401 | message | authentication failed |
+| 400  | message | content-type is not application/json, request body empty, missing field |
+| 500  | message | - |
+
+I'm returning the claims as well because probably the client application needs some of them basically the user and scope
 
 ## User
 
 #### Register
 
+**Request**
 ```
 POST end-point/user/
 Accept: application/json
 Content-Type: application/json
 ```
-
-**Request body**
 
 ```json
 {
@@ -85,15 +82,7 @@ Content-Type: application/json
 }
 ```
 
-**Response body**
-
-possibles responses codes:
-
-| Code | reponse | description |
-|------|---------|-------------|
-| 201  | message,user | successfully created user|
-| 400  | message | content-type is not application/json, request body empty, missing field |
-| 500  | message | - |
+**Response**
 
 ```
 201 Created
@@ -114,3 +103,11 @@ Content-Type: application/json
   }
 }
 ```
+
+Possibles responses:
+
+| HTTP Code | reponse | description |
+|------|---------|-------------|
+| 201  | message,user | successfully created user|
+| 400  | message | content-type is not application/json, request body empty, missing field |
+| 500  | message | - |
