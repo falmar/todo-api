@@ -65,9 +65,9 @@ Possibles responses:
 
 ## User
 
-#### Register
+### Register
 
-**Request**
+Request
 ```
 POST end-point/user/
 Accept: application/json
@@ -82,7 +82,7 @@ Content-Type: application/json
 }
 ```
 
-**Response**
+Response
 
 ```
 201 Created
@@ -112,9 +112,10 @@ Possibles responses:
 | 400  | message | content-type is not application/json, request body empty, missing field |
 | 500  | message | - |
 
-#### Update
+### Update
 
-**Request**
+Request
+
 ```
 PUT end-point/user/7/
 Accept: application/json
@@ -131,7 +132,7 @@ Authorization: Bearer jwt_token
 
 > Note: If additional field password is send, then the password will be changed as well
 
-**Response**
+Response
 
 ```
 200 OK
@@ -163,9 +164,10 @@ Possibles responses:
 | 404 | message | user does not exist |
 | 500  | message | - |
 
-#### Delete
+### Delete
 
-**Request**
+Request
+
 ```
 DELETE end-point/user/:user_id/
 Accept: application/json
@@ -177,7 +179,7 @@ Authorization: Bearer jwt_token
 
 > Note: it will not delete the current logged user, and is required to have scope user:delete to delete other users
 
-**Response**
+Response
 
 ```
 200 OK
