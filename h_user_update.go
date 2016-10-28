@@ -46,7 +46,7 @@ func userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 				}{}
 
 				// decode request body
-				if err := jsonDecode(r.Body, &request); err != nil {
+				if err = jsonDecode(r.Body, &request); err != nil {
 					jsonErrorEncode(w, errMalformedJSON, http.StatusBadRequest, err)
 					return
 				}
@@ -60,7 +60,8 @@ func userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 				if request.Password != "" {
-					pwd, err := bcrypt.GenerateFromPassword([]byte(request.Password), 10)
+					var pwd []byte
+					pwd, err = bcrypt.GenerateFromPassword([]byte(request.Password), 10)
 
 					if err != nil {
 						jsonErrorEncode(w, err, http.StatusInternalServerError, err)
@@ -71,7 +72,7 @@ func userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 				// validate user is correctly formed for updated
-				if err := user.validateDB(postgres); err != nil {
+				if err = user.validateDB(postgres); err != nil {
 					if err == errUniqueConstraintViolationDB {
 						jsonErrorEncode(w, errUniqueConstraintViolationDB, http.StatusInternalServerError, err)
 					} else {
@@ -82,7 +83,8 @@ func userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 				}
 
 				// update user
-				if rows, err := user.updateDB(postgres); err != nil {
+				rows, err := user.updateDB(postgres)
+				if err != nil {
 					jsonErrorEncode(w, errInternalServerError, http.StatusInternalServerError, err)
 					return
 				} else if rows == 0 {
@@ -90,8 +92,15 @@ func userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 
+				// get newly updated user
+				finalUser, err := user.getByID(user.ID, postgres)
+				if err != nil {
+					jsonErrorEncode(w, errInternalServerError, http.StatusInternalServerError, err)
+					return
+				}
+
 				// set user into response
-				response["user"] = user
+				response["user"] = finalUser
 				response["message"] = map[string]string{
 					"type":  "SUCCESS",
 					"title": "User successfully updated",
