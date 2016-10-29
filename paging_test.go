@@ -127,10 +127,11 @@ func TestPages3(t *testing.T) {
 	p := &paging{CurrentPage: 2, PageSize: 1}
 
 	p.calc(3)
+	pgs := p.getPages()
 
-	for i, v := range p.Pages {
-		if pages[i] != v {
-			t.Fatalf("Expected Pages[%d] to be %d; got: %d", i, pages[i], v)
+	for i, v := range pages {
+		if pgs[i] != v {
+			t.Fatalf("Expected Pages[%d] to be %d; got: %d", i, v, p.Pages[i])
 		}
 	}
 
@@ -142,10 +143,11 @@ func TestPages20(t *testing.T) {
 	p := &paging{CurrentPage: 4, PageSize: 5}
 
 	p.calc(20)
+	pgs := p.getPages()
 
-	for i, v := range p.Pages {
-		if pages[i] != v {
-			t.Fatalf("Expected Pages[%d] to be %d; got: %d", i, pages[i], v)
+	for i, v := range pages {
+		if pgs[i] != v {
+			t.Fatalf("Expected Pages[%d] to be %d; got: %d", i, v, p.Pages[i])
 		}
 	}
 
@@ -157,10 +159,11 @@ func TestPages40(t *testing.T) {
 	p := &paging{CurrentPage: 6, PageSize: 5}
 
 	p.calc(40)
+	pgs := p.getPages()
 
-	for i, v := range p.Pages {
-		if pages[i] != v {
-			t.Fatalf("Expected Pages[%d] to be %d; got: %d", i, pages[i], v)
+	for i, v := range pages {
+		if pgs[i] != v {
+			t.Fatalf("Expected Pages[%d] to be %d; got: %d", i, v, p.Pages[i])
 		}
 	}
 
@@ -172,10 +175,11 @@ func TestPages30(t *testing.T) {
 	p := &paging{CurrentPage: 4, PageSize: 5}
 
 	p.calc(30)
+	pgs := p.getPages()
 
-	for i, v := range p.Pages {
-		if pages[i] != v {
-			t.Fatalf("Expected Pages[%d] to be %d; got: %d", i, pages[i], v)
+	for i, v := range pages {
+		if pgs[i] != v {
+			t.Fatalf("Expected Pages[%d] to be %d; got: %d", i, v, p.Pages[i])
 		}
 	}
 
@@ -187,10 +191,11 @@ func TestPages45(t *testing.T) {
 	p := &paging{CurrentPage: 4, PageSize: 10}
 
 	p.calc(45)
+	pgs := p.getPages()
 
-	for i, v := range p.Pages {
-		if pages[i] != v {
-			t.Fatalf("Expected Pages[%d] to be %d; got: %d", i, pages[i], v)
+	for i, v := range pages {
+		if pgs[i] != v {
+			t.Fatalf("Expected Pages[%d] to be %d; got: %d", i, v, p.Pages[i])
 		}
 	}
 

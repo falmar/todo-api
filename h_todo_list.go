@@ -41,6 +41,13 @@ func todoListHandler(w http.ResponseWriter, r *http.Request) {
 		t.Link = r.Host + "/todo/" + strconv.FormatInt(t.ID, 10) + "/"
 	}
 
+	pageLinkFormatter := func(n int64) string {
+		return r.Host + "/todo/?current_page=" + strconv.FormatInt(n, 10)
+	}
+
+	paging.Links = paging.getLinks(pageLinkFormatter)
+	paging.PagesURL = paging.getPagesWithURL(pageLinkFormatter)
+
 	response["todos"] = todos
 	response["pagination"] = paging
 
