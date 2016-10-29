@@ -23,6 +23,10 @@ type MyClaims struct {
 
 // Valid implement interface jwt.Claims
 func (mc MyClaims) Valid() error {
+	if mc.User.ID == 0 {
+		return errors.New("User's ID can not be empty")
+	}
+
 	if mc.Scope == "" {
 		return errors.New("Scope can not be empty")
 	}

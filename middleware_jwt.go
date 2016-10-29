@@ -27,14 +27,13 @@ func jwtMiddleware(h http.Handler) http.Handler {
 		}
 
 		if tokenString == "" {
-			jsonErrorEncode(w, errJWTNotFound, http.StatusBadRequest, errJWTNotFound)
+			jsonErrorEncode(w, http.StatusBadRequest, errJWTNotFound, errJWTNotFound)
 			return
 		}
 
 		token, err := parseToken(tokenString, claims, []byte(os.Getenv("JWT_KEY")))
-
 		if err != nil {
-			jsonErrorEncode(w, err, http.StatusForbidden, err)
+			jsonErrorEncode(w, http.StatusForbidden, err, err)
 			return
 		}
 
@@ -46,6 +45,5 @@ func jwtMiddleware(h http.Handler) http.Handler {
 		}
 
 		w.WriteHeader(http.StatusForbidden)
-
 	})
 }

@@ -25,6 +25,7 @@ func setRoutes(r *httprouter.Router) {
 	r.DELETE("/user/:id/", wrapperHandler(auth.ThenFunc(userDeleteHandler)))
 
 	// todo
+	r.GET("/todo/", wrapperHandler(auth.ThenFunc(todoListHandler)))
 }
 
 func wrapperHandler(h http.Handler) httprouter.Handle {

@@ -24,19 +24,19 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// check request content-type is json
 	if !isJSONContentType(r) {
-		jsonErrorEncode(w, errJSONContentType, http.StatusBadRequest, errJSONContentType)
+		jsonErrorEncode(w, http.StatusBadRequest, errJSONContentType, errJSONContentType)
 		return
 	}
 
 	// decode request
 	if err := jsonDecode(r.Body, &request); err != nil {
-		jsonErrorEncode(w, errMalformedJSON, http.StatusBadRequest, err)
+		jsonErrorEncode(w, http.StatusBadRequest, errMalformedJSON, err)
 		return
 	}
 
 	// verify email and password are not empty
 	if request.Email == "" || request.Password == "" {
-		jsonErrorEncode(w, errBadRequest, http.StatusBadRequest, errBadRequest)
+		jsonErrorEncode(w, http.StatusBadRequest, nil, nil)
 		return
 	}
 
@@ -48,11 +48,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	// verify authentication errors
 	if err != nil {
 		if err == sql.ErrNoRows {
-			jsonErrorEncode(w, errNotFound, http.StatusNotFound, err)
+			jsonErrorEncode(w, http.StatusNotFound, nil, err)
 		} else if err == bcrypt.ErrMismatchedHashAndPassword {
-			jsonErrorEncode(w, errUnauthorized, http.StatusUnauthorized, err)
+			jsonErrorEncode(w, http.StatusUnauthorized, nil, err)
 		} else {
-			jsonErrorEncode(w, errInternalServerError, http.StatusInternalServerError, err)
+			jsonErrorEncode(w, http.StatusInternalServerError, nil, err)
 		}
 		return
 	}
@@ -60,7 +60,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	// get user by id
 	user, err := authUser.getByID(userID, postgres)
 	if err != nil {
-		jsonErrorEncode(w, errInternalServerError, http.StatusInternalServerError, err)
+		jsonErrorEncode(w, http.StatusInternalServerError, nil, err)
 		return
 	}
 
@@ -78,7 +78,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	token, err := generateToken(myClaims, []byte(os.Getenv("JWT_KEY")))
 
 	if err != nil {
-		jsonErrorEncode(w, errInternalServerError, http.StatusInternalServerError, err)
+		jsonErrorEncode(w, http.StatusInternalServerError, nil, err)
 		return
 	}
 
@@ -92,7 +92,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	if err := jsonEncode(w, response); err != nil {
-		jsonErrorEncode(w, errMalformedJSON, http.StatusBadRequest, err)
+		jsonErrorEncode(w, http.StatusBadRequest, errMalformedJSON, err)
 		return
 	}
 }

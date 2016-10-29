@@ -27,11 +27,19 @@ func jsonEncode(w http.ResponseWriter, from interface{}) error {
 	return json.NewEncoder(w).Encode(from)
 }
 
-func jsonErrorEncode(w http.ResponseWriter, err error, code int, originalError error) {
+func jsonErrorEncode(w http.ResponseWriter, code int, err error, originalError error) {
+	if originalError == nil {
+		originalError = errors.New(http.StatusText(code))
+	}
+
 	log.Println(originalError)
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
+
+	if err == nil {
+		err = errors.New(http.StatusText(code))
+	}
 
 	jsonEncode(w, map[string]map[string]string{
 		"message": map[string]string{

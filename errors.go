@@ -4,20 +4,10 @@
 
 package main
 
-import (
-	"errors"
-	"net/http"
-)
+import "errors"
 
 // bcrypt
 var errEncryptPassword = errors.New("Error ocurred trying to encrypt password")
-
-// http
-var errInternalServerError = errors.New(http.StatusText(http.StatusInternalServerError))
-var errBadRequest = errors.New(http.StatusText(http.StatusBadRequest))
-var errNotFound = errors.New(http.StatusText(http.StatusNotFound))
-var errUnauthorized = errors.New(http.StatusText(http.StatusUnauthorized))
-var errForbidden = errors.New(http.StatusText(http.StatusForbidden))
 
 // json
 var errMalformedJSON = errors.New("Malformed JSON")

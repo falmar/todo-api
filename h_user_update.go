@@ -19,25 +19,25 @@ func userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	claims, err := claimsFromToken(token, err)
 
 	if err != nil {
-		jsonErrorEncode(w, errForbidden, http.StatusForbidden, errForbidden)
+		jsonErrorEncode(w, http.StatusForbidden, nil, nil)
 	}
 
 	if !isJSONContentType(r) {
-		jsonErrorEncode(w, errJSONContentType, http.StatusBadRequest, errJSONContentType)
+		jsonErrorEncode(w, http.StatusBadRequest, errJSONContentType, errJSONContentType)
 		return
 	}
 
 	// get UserID from request url
 	userID, err := strconv.ParseInt(params.ByName("id"), 10, 64)
 	if err != nil || userID == 0 {
-		jsonErrorEncode(w, errBadRequest, http.StatusBadRequest, errBadRequest)
+		jsonErrorEncode(w, http.StatusBadRequest, nil, nil)
 		return
 	}
 
 	// check if user has permission to update other users or only itself
 	canUpdate := isAllowedScope("user:update", claims.Scope) || claims.User.ID == userID
 	if !canUpdate {
-		jsonErrorEncode(w, errForbidden, http.StatusForbidden, errForbidden)
+		jsonErrorEncode(w, http.StatusForbidden, nil, nil)
 		return
 	}
 
@@ -50,7 +50,7 @@ func userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	// decode request body
 	if err = jsonDecode(r.Body, &request); err != nil {
-		jsonErrorEncode(w, errMalformedJSON, http.StatusBadRequest, err)
+		jsonErrorEncode(w, http.StatusBadRequest, errMalformedJSON, err)
 		return
 	}
 
@@ -67,7 +67,7 @@ func userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 		pwd, err = bcrypt.GenerateFromPassword([]byte(request.Password), 10)
 
 		if err != nil {
-			jsonErrorEncode(w, err, http.StatusInternalServerError, err)
+			jsonErrorEncode(w, http.StatusInternalServerError, err, err)
 			return
 		}
 
@@ -77,9 +77,9 @@ func userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	// validate user is correctly formed for updated
 	if err = user.validateDB(postgres); err != nil {
 		if err == errUniqueConstraintViolationDB {
-			jsonErrorEncode(w, errUniqueConstraintViolationDB, http.StatusInternalServerError, err)
+			jsonErrorEncode(w, http.StatusInternalServerError, errUniqueConstraintViolationDB, err)
 		} else {
-			jsonErrorEncode(w, errInternalServerError, http.StatusInternalServerError, err)
+			jsonErrorEncode(w, http.StatusInternalServerError, nil, err)
 		}
 
 		return
@@ -88,17 +88,17 @@ func userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	// update user
 	rows, err := user.updateDB(postgres)
 	if err != nil {
-		jsonErrorEncode(w, errInternalServerError, http.StatusInternalServerError, err)
+		jsonErrorEncode(w, http.StatusInternalServerError, nil, err)
 		return
 	} else if rows == 0 {
-		jsonErrorEncode(w, errNotFound, http.StatusNotFound, errNotFound)
+		jsonErrorEncode(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
 	// get newly updated user
 	finalUser, err := user.getByID(user.ID, postgres)
 	if err != nil {
-		jsonErrorEncode(w, errInternalServerError, http.StatusInternalServerError, err)
+		jsonErrorEncode(w, http.StatusInternalServerError, nil, err)
 		return
 	}
 
@@ -115,7 +115,7 @@ func userUpdateHandler(w http.ResponseWriter, r *http.Request) {
 
 	// write reponse
 	if err := jsonEncode(w, response); err != nil {
-		jsonErrorEncode(w, errMalformedJSON, http.StatusInternalServerError, err)
+		jsonErrorEncode(w, http.StatusInternalServerError, errMalformedJSON, err)
 		return
 	}
 

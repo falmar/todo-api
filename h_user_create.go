@@ -14,7 +14,7 @@ import (
 func userCreateHandler(w http.ResponseWriter, r *http.Request) {
 	// check content type is application/json
 	if !isJSONContentType(r) {
-		jsonErrorEncode(w, errJSONContentType, http.StatusBadRequest, errJSONContentType)
+		jsonErrorEncode(w, http.StatusBadRequest, errJSONContentType, errJSONContentType)
 		return
 	}
 
@@ -27,12 +27,12 @@ func userCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	// decode request body
 	if err := jsonDecode(r.Body, &request); err != nil {
-		jsonErrorEncode(w, errMalformedJSON, http.StatusBadRequest, err)
+		jsonErrorEncode(w, http.StatusBadRequest, errMalformedJSON, err)
 		return
 	}
 
 	if request.Name == "" || request.Email == "" || request.Password == "" {
-		jsonErrorEncode(w, errBadRequest, http.StatusBadRequest, errBadRequest)
+		jsonErrorEncode(w, http.StatusBadRequest, nil, nil)
 		return
 	}
 
@@ -48,7 +48,7 @@ func userCreateHandler(w http.ResponseWriter, r *http.Request) {
 	// password encrypt
 	np, err := bcrypt.GenerateFromPassword([]byte(request.Password), 10)
 	if err != nil {
-		jsonErrorEncode(w, errEncryptPassword, http.StatusInternalServerError, err)
+		jsonErrorEncode(w, http.StatusInternalServerError, errEncryptPassword, err)
 		return
 	}
 	user.Password = string(np)
@@ -56,9 +56,9 @@ func userCreateHandler(w http.ResponseWriter, r *http.Request) {
 	// validate user is correctly formed for insert
 	if err := user.validateDB(postgres); err != nil {
 		if err == errUniqueConstraintViolationDB {
-			jsonErrorEncode(w, errUniqueConstraintViolationDB, http.StatusInternalServerError, err)
+			jsonErrorEncode(w, http.StatusInternalServerError, errUniqueConstraintViolationDB, err)
 		} else {
-			jsonErrorEncode(w, errInternalServerError, http.StatusInternalServerError, err)
+			jsonErrorEncode(w, http.StatusInternalServerError, nil, err)
 		}
 
 		return
@@ -66,7 +66,7 @@ func userCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	// insert user into db
 	if err := user.insertDB(postgres); err != nil {
-		jsonErrorEncode(w, errInternalServerError, http.StatusInternalServerError, err)
+		jsonErrorEncode(w, http.StatusInternalServerError, nil, err)
 		return
 	}
 
@@ -83,7 +83,7 @@ func userCreateHandler(w http.ResponseWriter, r *http.Request) {
 
 	// write reponse
 	if err := jsonEncode(w, response); err != nil {
-		jsonErrorEncode(w, errMalformedJSON, http.StatusInternalServerError, err)
+		jsonErrorEncode(w, http.StatusInternalServerError, errMalformedJSON, err)
 		return
 	}
 }

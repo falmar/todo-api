@@ -16,20 +16,20 @@ func userDeleteHandler(w http.ResponseWriter, r *http.Request) {
 	claims, err := claimsFromToken(token, err)
 
 	if err != nil {
-		jsonErrorEncode(w, errForbidden, http.StatusForbidden, errForbidden)
+		jsonErrorEncode(w, http.StatusForbidden, nil, nil)
 	}
 
 	// get UserID from request url
 	userID, err := strconv.ParseInt(params.ByName("id"), 10, 64)
 	if err != nil || userID == 0 {
-		jsonErrorEncode(w, errBadRequest, http.StatusBadRequest, errBadRequest)
+		jsonErrorEncode(w, http.StatusBadRequest, nil, nil)
 		return
 	}
 
 	// check if user has permission to update other users or only itself
 	canDelete := isAllowedScope("user:delete", claims.Scope) && claims.User.ID != userID
 	if !canDelete {
-		jsonErrorEncode(w, errForbidden, http.StatusForbidden, errForbidden)
+		jsonErrorEncode(w, http.StatusForbidden, nil, nil)
 		return
 	}
 
@@ -41,10 +41,10 @@ func userDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	// update user
 	if rows, err := user.deleteDB(postgres); err != nil {
-		jsonErrorEncode(w, errInternalServerError, http.StatusInternalServerError, err)
+		jsonErrorEncode(w, http.StatusInternalServerError, nil, err)
 		return
 	} else if rows == 0 {
-		jsonErrorEncode(w, errNotFound, http.StatusNotFound, errNotFound)
+		jsonErrorEncode(w, http.StatusNotFound, nil, nil)
 		return
 	}
 
@@ -60,7 +60,7 @@ func userDeleteHandler(w http.ResponseWriter, r *http.Request) {
 
 	// write reponse
 	if err := jsonEncode(w, response); err != nil {
-		jsonErrorEncode(w, errMalformedJSON, http.StatusInternalServerError, err)
+		jsonErrorEncode(w, http.StatusInternalServerError, errMalformedJSON, err)
 		return
 	}
 }
