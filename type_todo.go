@@ -27,12 +27,26 @@ func (t Todo) getByID(id int64, db *sql.DB) (*Todo, error) {
 	return todo, nil
 }
 
-func (t Todo) getByUserID(userID int64, db *sql.DB, limit, offset int64) ([]*Todo, error) {
-	ssql := fmt.Sprintf(`SELECT t.id, t.title, t.completed, t.created_at, t.updated_at
+func (t Todo) getByUserID(userID int64, db *sql.DB, p *paging) ([]*Todo, error) {
+	var count int64
+
+	ssql := fmt.Sprintf(`SELECT COUNT(*) as rCount
+		FROM %s.todo t
+		WHERE t.user_id = $1`, os.Getenv("DB_SCHEMA"))
+
+	err := db.QueryRow(ssql, userID).Scan(&count)
+
+	if err != nil {
+		return nil, err
+	}
+
+	p.calc(count)
+
+	ssql = fmt.Sprintf(`SELECT t.id, t.title, t.completed, t.created_at, t.updated_at
 		FROM %s.todo t
 		WHERE t.user_id = $1 LIMIT $2 OFFSET $3`, os.Getenv("DB_SCHEMA"))
 
-	rows, err := db.Query(ssql, userID, limit, offset)
+	rows, err := db.Query(ssql, userID, p.Max, p.Init)
 
 	if err != nil {
 		return nil, err

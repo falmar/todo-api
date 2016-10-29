@@ -7,6 +7,7 @@ package main
 import (
 	"database/sql"
 	"net/http"
+	"strconv"
 )
 
 func todoListHandler(w http.ResponseWriter, r *http.Request) {
@@ -18,13 +19,14 @@ func todoListHandler(w http.ResponseWriter, r *http.Request) {
 		jsonErrorEncode(w, http.StatusForbidden, nil, nil)
 	}
 
-	var page int64
-	var maxPerPage = int64(15)
+	page, _ := strconv.ParseInt(r.URL.Query().Get("current_page"), 10, 64)
+	maxPerPage, _ := strconv.ParseInt(r.URL.Query().Get("page_size"), 10, 64)
 
 	response := map[string]interface{}{}
 	todo := Todo{}
+	paging := &paging{CurrentPage: page, PageSize: maxPerPage}
 
-	todos, err := todo.getByUserID(claims.User.ID, postgres, maxPerPage, page)
+	todos, err := todo.getByUserID(claims.User.ID, postgres, paging)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
