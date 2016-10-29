@@ -18,11 +18,13 @@ func todoListHandler(w http.ResponseWriter, r *http.Request) {
 		jsonErrorEncode(w, http.StatusForbidden, nil, nil)
 	}
 
-	response := map[string]interface{}{}
+	var page int64
+	var maxPerPage = int64(15)
 
+	response := map[string]interface{}{}
 	todo := Todo{}
 
-	todos, err := todo.getByUserID(claims.User.ID, postgres, 15, 0)
+	todos, err := todo.getByUserID(claims.User.ID, postgres, maxPerPage, page)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
