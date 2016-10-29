@@ -10,6 +10,7 @@ import (
 	"errors"
 	"io"
 	"log"
+	"net"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
@@ -59,4 +60,21 @@ func paramsFromContext(ctx context.Context, err error) (httprouter.Params, error
 	}
 
 	return nil, errors.New("type *jwt.Token not found in context")
+}
+
+// taken from: http://stackoverflow.com/a/31551220
+func getLocalIP() string {
+	addrs, err := net.InterfaceAddrs()
+	if err != nil {
+		return ""
+	}
+	for _, address := range addrs {
+		// check the address type and if it is not a loopback the display it
+		if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			if ipnet.IP.To4() != nil {
+				return ipnet.IP.String()
+			}
+		}
+	}
+	return ""
 }

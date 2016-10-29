@@ -19,6 +19,7 @@ type Todo struct {
 	Completed bool      `json:"completed"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	Link      string    `json:"link"`
 }
 
 func (t Todo) getByID(id int64, db *sql.DB) (*Todo, error) {

@@ -37,7 +37,12 @@ func todoListHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	for _, t := range todos {
+		t.Link = r.Host + "/todo/" + strconv.FormatInt(t.ID, 10) + "/"
+	}
+
 	response["todos"] = todos
+	response["pagination"] = paging
 
 	w.Header().Set("Content-Type", "application/json")
 
