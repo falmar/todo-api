@@ -5,6 +5,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strings"
@@ -62,4 +63,28 @@ func isAllowedScope(s, ss string) bool {
 	}
 
 	return false
+}
+
+func jwtFromContext(ctx context.Context, err error) (*jwt.Token, error) {
+	if err != nil {
+		return nil, err
+	}
+
+	if token, ok := ctx.Value("jwt").(*jwt.Token); ok {
+		return token, nil
+	}
+
+	return nil, errors.New("type *jwt.Token not found in context")
+}
+
+func claimsFromToken(t *jwt.Token, err error) (*MyClaims, error) {
+	if err != nil {
+		return nil, err
+	}
+
+	if claims, ok := t.Claims.(*MyClaims); ok {
+		return claims, nil
+	}
+
+	return nil, errors.New("type *MyClaims not found in *jwt.Token")
 }

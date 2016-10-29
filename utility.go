@@ -5,10 +5,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"io"
 	"log"
 	"net/http"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 func isJSONContentType(r *http.Request) bool {
@@ -35,4 +39,16 @@ func jsonErrorEncode(w http.ResponseWriter, err error, code int, originalError e
 			"title": err.Error(),
 		},
 	})
+}
+
+func paramsFromContext(ctx context.Context, err error) (httprouter.Params, error) {
+	if err != nil {
+		return nil, err
+	}
+
+	if token, ok := ctx.Value("params").(httprouter.Params); ok {
+		return token, nil
+	}
+
+	return nil, errors.New("type *jwt.Token not found in context")
 }
