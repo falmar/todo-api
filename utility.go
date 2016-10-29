@@ -62,6 +62,17 @@ func paramsFromContext(ctx context.Context, err error) (httprouter.Params, error
 	return nil, errors.New("type *jwt.Token not found in context")
 }
 
+func getHost(r *http.Request) string {
+	// scheme := "http://"
+	// isTLS := r.TLS != nil
+	//
+	// if isTLS {
+	// 	scheme = "https://"
+	// }
+
+	return r.Host
+}
+
 // taken from: http://stackoverflow.com/a/31551220
 func getLocalIP() string {
 	addrs, err := net.InterfaceAddrs()
