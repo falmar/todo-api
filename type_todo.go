@@ -75,7 +75,7 @@ func (t Todo) getByUserID(userID int64, db *sql.DB, p *paging) ([]*Todo, error) 
 	todos := []*Todo{}
 
 	for rows.Next() {
-		todo := &Todo{}
+		todo := &Todo{UserID: userID}
 
 		err := rows.Scan(&todo.ID, &todo.Title, &todo.Completed, &todo.CreatedAt, &todo.UpdatedAt)
 
