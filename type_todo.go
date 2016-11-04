@@ -111,3 +111,15 @@ func (t *Todo) updateDB(db *sql.DB) (int64, error) {
 
 	return res.RowsAffected()
 }
+
+func (t *Todo) deleteDB(db *sql.DB) (int64, error) {
+	ssql := fmt.Sprintf(`DELETE FROM %s.todo WHERE id = $1 AND user_id = $2`, os.Getenv("DB_SCHEMA"))
+
+	res, err := db.Exec(ssql, t.ID, t.UserID)
+
+	if err != nil {
+		return 0, nil
+	}
+
+	return res.RowsAffected()
+}
