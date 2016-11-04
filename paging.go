@@ -32,7 +32,11 @@ func (p *paging) calc(results int64) {
 		p.PageSize = 15
 	}
 
-	for p.CurrentPage > 0 && (p.CurrentPage-1)*p.PageSize > results {
+	if p.CurrentPage <= 0 {
+		p.CurrentPage = 1
+	}
+
+	for p.CurrentPage > 1 && (p.CurrentPage-1)*p.PageSize > results {
 		p.CurrentPage--
 	}
 
@@ -43,6 +47,7 @@ func (p *paging) calc(results int64) {
 	p.TotalPages = p.getTotalPages()
 
 	p.Max = p.PageSize
+	pageMax = pageInit + p.PageSize
 
 	if p.Max > results {
 		p.Max = results
@@ -57,8 +62,6 @@ func (p *paging) calc(results int64) {
 
 		pageInit = p.Init
 		pageMax = pageInit + p.Max
-	} else {
-		pageMax = pageInit + p.PageSize
 	}
 
 	if pageMax >= results {
@@ -117,19 +120,15 @@ func (p paging) rng(init, max int64) []int64 {
 }
 
 func (p paging) getLinks(f func(int64) string) map[string]pageURL {
-	var np int64
-	var pp int64
+	np := p.CurrentPage + 1
+	pp := p.CurrentPage - 1
 
-	if p.CurrentPage > 1 {
-		np = p.CurrentPage + 1
-	} else {
-		np = 1
+	if p.CurrentPage == 1 {
+		pp = 1
 	}
 
-	if p.CurrentPage < p.TotalPages {
-		pp = p.CurrentPage - 1
-	} else {
-		pp = p.TotalPages
+	if p.CurrentPage >= p.TotalPages {
+		np = p.TotalPages
 	}
 
 	return map[string]pageURL{
