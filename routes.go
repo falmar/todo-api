@@ -26,6 +26,7 @@ func setRoutes(r *httprouter.Router) {
 
 	// todo
 	r.GET("/todo/", wrapperHandler(auth.ThenFunc(todoListHandler)))
+	r.POST("/todo/", wrapperHandler(auth.ThenFunc(todoAddHandler)))
 }
 
 func wrapperHandler(h http.Handler) httprouter.Handle {

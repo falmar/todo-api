@@ -65,13 +65,7 @@ func (u *User) insertDB(db *sql.DB) error {
 		VALUES
 		($1, $2, $3, $4, $5) RETURNING id`, os.Getenv("DB_SCHEMA"))
 
-	err := db.QueryRow(ssql, u.Name, u.Email, u.Password, u.CreatedAt, u.UpdatedAt).Scan(&u.ID)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return db.QueryRow(ssql, u.Name, u.Email, u.Password, u.CreatedAt, u.UpdatedAt).Scan(&u.ID)
 }
 
 func (u *User) updateDB(db *sql.DB) (int64, error) {

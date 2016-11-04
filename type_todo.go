@@ -71,3 +71,12 @@ func (t Todo) getByUserID(userID int64, db *sql.DB, p *paging) ([]*Todo, error) 
 
 	return todos, nil
 }
+
+func (t *Todo) insertDB(db *sql.DB) error {
+	ssql := fmt.Sprintf(`INSERT INTO %s.todo
+		(user_id, title, completed, created_at, updated_at)
+		VALUES
+		($1, $2, $3, $4, $5) RETURNING id`, os.Getenv("DB_SCHEMA"))
+
+	return db.QueryRow(ssql, t.UserID, t.Title, t.Completed, t.CreatedAt, t.UpdatedAt).Scan(&t.ID)
+}
