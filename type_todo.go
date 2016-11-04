@@ -25,6 +25,23 @@ type Todo struct {
 func (t Todo) getByID(id int64, db *sql.DB) (*Todo, error) {
 	todo := &Todo{}
 
+	ssql := fmt.Sprintf(`SELECT id, user_id, title, completed, created_at, updated_at
+		FROM %s.todo t
+		WHERE t.id = $1`, os.Getenv("DB_SCHEMA"))
+
+	err := db.QueryRow(ssql, id).Scan(
+		&todo.ID,
+		&todo.UserID,
+		&todo.Title,
+		&todo.Completed,
+		&todo.CreatedAt,
+		&todo.UpdatedAt,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
 	return todo, nil
 }
 
@@ -79,4 +96,18 @@ func (t *Todo) insertDB(db *sql.DB) error {
 		($1, $2, $3, $4, $5) RETURNING id`, os.Getenv("DB_SCHEMA"))
 
 	return db.QueryRow(ssql, t.UserID, t.Title, t.Completed, t.CreatedAt, t.UpdatedAt).Scan(&t.ID)
+}
+
+func (t *Todo) updateDB(db *sql.DB) (int64, error) {
+	ssql := fmt.Sprintf(`UPDATE %s.todo
+		SET title = $1, completed = $2, updated_at = $3
+		WHERE id = $4 AND user_id = $5`, os.Getenv("DB_SCHEMA"))
+
+	res, err := db.Exec(ssql, t.Title, t.Completed, t.UpdatedAt, t.ID, t.UserID)
+
+	if err != nil {
+		return 0, nil
+	}
+
+	return res.RowsAffected()
 }
