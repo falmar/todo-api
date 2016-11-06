@@ -17,7 +17,7 @@ func (c CORS) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Origin, Authorization")
 		w.Header().Set(
 			"Access-Control-Allow-Methods",
-			r.Header.Get("Access-Control-Allow-Methods"),
+			r.Header.Get("Access-Control-Request-Method"),
 		)
 	}
 
