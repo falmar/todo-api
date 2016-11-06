@@ -13,14 +13,13 @@ import (
 )
 
 func setRoutes(r *httprouter.Router) {
-	common := alice.New(corsMiddleware)
-	auth := common.Append(jwtMiddleware)
+	auth := alice.New(jwtMiddleware)
 
 	// auth
-	r.POST("/login/", wrapperHandler(common.ThenFunc(loginHandler)))
+	r.POST("/login/", wrapperHandler(http.HandlerFunc(loginHandler)))
 
 	// user
-	r.POST("/user/", wrapperHandler(common.ThenFunc(userCreateHandler)))
+	r.POST("/user/", wrapperHandler(http.HandlerFunc(userCreateHandler)))
 	r.PUT("/user/:id/", wrapperHandler(auth.ThenFunc(userUpdateHandler)))
 	r.DELETE("/user/:id/", wrapperHandler(auth.ThenFunc(userDeleteHandler)))
 

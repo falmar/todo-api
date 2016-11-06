@@ -12,12 +12,13 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"strings"
 
 	"github.com/julienschmidt/httprouter"
 )
 
 func isJSONContentType(r *http.Request) bool {
-	return r.Header.Get("Content-Type") == "application/json"
+	return strings.Contains(r.Header.Get("Content-Type"), "application/json")
 }
 
 func jsonDecode(r io.Reader, into interface{}) error {

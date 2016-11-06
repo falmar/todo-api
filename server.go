@@ -31,7 +31,9 @@ func main() {
 	router := httprouter.New()
 	setRoutes(router)
 
+	cors := CORS{router}
+
 	// start listening
 	log.Println(fmt.Sprintf("Listening at %s", addr))
-	http.ListenAndServe(addr, router)
+	http.ListenAndServe(addr, cors)
 }
