@@ -16,6 +16,7 @@ func setRoutes(r *httprouter.Router) {
 	auth := alice.New(jwtMiddleware)
 
 	// auth
+	r.GET("/checkToken/", wrapperHandler(http.HandlerFunc(checkTokenHandler)))
 	r.POST("/login/", wrapperHandler(http.HandlerFunc(loginHandler)))
 
 	// user
