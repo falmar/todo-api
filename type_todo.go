@@ -62,7 +62,7 @@ func (t Todo) getByUserID(userID int64, db *sql.DB, p *paging) ([]*Todo, error) 
 
 	ssql = fmt.Sprintf(`SELECT t.id, t.title, t.completed, t.created_at, t.updated_at
 		FROM %s.todo t
-		WHERE t.user_id = $1 LIMIT $2 OFFSET $3`, os.Getenv("DB_SCHEMA"))
+		WHERE t.user_id = $1 ORDER BY t.updated_at DESC LIMIT $2 OFFSET $3`, os.Getenv("DB_SCHEMA"))
 
 	rows, err := db.Query(ssql, userID, p.Max, p.Init)
 
