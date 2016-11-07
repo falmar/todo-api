@@ -278,6 +278,44 @@ Possible responses:
 | 403 | message | forbidden access |
 | 500  | message | - |
 
+### Get
+
+Request
+```
+GET end-point/todo/1/
+Accept: application/json
+Authorization: Bearer {jwt_token}
+```
+`no body required`
+
+Response
+
+```
+200 OK
+Content-Type: application/json
+```
+```json
+{
+  "todo": {
+    "id": 1,
+    "user_id": 7,
+    "title": "First TODO",
+    "completed": false,
+    "created_at": "2016-11-04T16:51:28.013889102Z",
+    "updated_at": "2016-11-04T16:51:28.013889102Z",
+    "link": "end-point/todo/1/"
+  }
+}
+```
+
+Possible responses:
+
+| HTTP Code | reponse | description |
+|------|---------|-------------|
+| 201  | todo | get a single todo |
+| 403 | message | forbidden access |
+| 500  | message | - |
+
 ### Add
 
 Request
