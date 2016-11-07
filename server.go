@@ -17,7 +17,7 @@ import (
 func main() {
 	// load Environment variables
 	if err := godotenv.Load(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	addr := ":" + os.Getenv("PORT")
