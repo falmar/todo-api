@@ -3,11 +3,11 @@
 Simple TODO API with JWT Authentication
 
 ## Index
-- [API Documentation](#api documentation)
+- [API Documentation](#api-documentation)
 - [Login](#login)
 - [Users](#user)
 - [TODOs](#todo)
-- [Local Install](#local install)
+- [Local Install](#local-install)
 
 
 ## API Documentation
@@ -480,7 +480,7 @@ $ docker run --name todo-api-postgres -e POSTGRES_PASSWORD=superpassword -d -p 5
 $ docker run -it --rm --link todo-api-postgres:postgres -e PGPASSWORD=superpassword postgres psql -h postgres:9.5 -U postgres
 ```
 
-Expose port 5432 to connect to posgres if building the api locally
+Expose port 5432 to connect to postgres if building the api locally
 
 On posgres shell
 
@@ -521,12 +521,14 @@ Now postgres is ready
 
 ### Building Golang todo-api on docker
 
+Not recommended if you wanna change the project files and run the API right away
+
 Assuming your current directory is the project folder
 
 ```
-$ docker pull golang:1.7
 $ docker build -t your-user/todo-api .
 $ docker run --name todo-api -p 8080:80 -d \
+--link todo-api-postgres:postgres \
 -e PORT=80 \
 -e JWT_KEY=secret-key \
 -e JWT_ISSUER=anything \
@@ -537,7 +539,7 @@ $ docker run --name todo-api -p 8080:80 -d \
 -e DB_PASSWORD=superpassword \
 -e DB_PORT=5432 \
 -e DB_SSLMODE=disable \
-your-user/todo-api/todo-api
+your-user/todo-api
 ```
 
 expose port 8080 to connect to the API
@@ -553,7 +555,7 @@ $ cp .env.example .env
 $ vi .env
 ```
 
-Your .env file should look similar to this, change whatever is neccessary
+Edit the .env file that should look similar to this. Change whatever is neccessary
 
 ```
 # BASIC
