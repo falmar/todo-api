@@ -4,9 +4,9 @@ Simple TODO API with JWT Authentication
 
 ## Index
 - [API Documentation](#api-documentation)
-- [Login](#login)
-- [Users](#user)
-- [TODOs](#todo)
+	- [Login](#login)
+	- [Users](#user)
+	- [TODOs](#todo)
 - [Local Install](#local-install)
 
 
