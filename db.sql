@@ -5,6 +5,9 @@
 -- PostgreSQL
 -- change schema "public" if required
 
+DROP TABLE IF EXISTS public.todo;
+DROP TABLE IF EXISTS public.user;
+
 CREATE TABLE public.user (
   id serial PRIMARY KEY,
   name VARCHAR(45) NOT NULL,

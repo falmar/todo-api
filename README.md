@@ -2,6 +2,13 @@
 
 Simple TODO API with JWT Authentication
 
+## Index
+- [API Documentation](#api documentation)
+- [Login](#login)
+- [Users](#user)
+- [TODOs](#todo)
+- [Local Install](#local install)
+
 
 ## API Documentation
 
@@ -452,3 +459,127 @@ Possible responses:
 | 403 | message | forbidden access |
 | 404 | message | todo/user not found |
 | 500  | message | - |
+
+***
+
+## Local Install
+
+**Requirements**
+
+- Docker >= 1.10
+- PostgreSQL >= 9.3
+- Golang >= 1.7
+
+### Prepare PostgreSQL
+
+Assuming you are using docker...
+
+```
+$ docker pull postgres:9.5
+$ docker run --name todo-api-postgres -e POSTGRES_PASSWORD=superpassword -d -p 5432:5432 postgres:9.5
+$ docker run -it --rm --link todo-api-postgres:postgres -e PGPASSWORD=superpassword postgres psql -h postgres:9.5 -U postgres
+```
+
+Expose port 5432 to connect to posgres if building the api locally
+
+On posgres shell
+
+```
+psql (9.5.5)
+Type "help" for help.
+
+postgres=# DROP TABLE IF EXISTS public.todo;
+postgres=# DROP TABLE IF EXISTS public.user;
+
+postgres=# CREATE TABLE public.user (
+  id serial PRIMARY KEY,
+  name VARCHAR(45) NOT NULL,
+  email VARCHAR(90) UNIQUE NOT NULL,
+  password VARCHAR(512) NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE,
+  updated_at TIMESTAMP WITH TIME ZONE
+);
+
+postgres=# CREATE TABLE public.todo (
+  id serial PRIMARY KEY,
+  user_id int4 NOT NULL,
+  title VARCHAR(256) NOT NULL,
+  completed BOOL NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE,
+  updated_at TIMESTAMP WITH TIME ZONE
+);
+
+psotgres=# ALTER TABLE public.todo
+ADD CONSTRAINT todo_user_id FOREIGN KEY (user_id) REFERENCES public.user (id);
+
+postgres=# \q
+```
+
+Once you quit the postgres shell the container will be inmediatly removed
+
+Now postgres is ready
+
+### Building Golang todo-api on docker
+
+Assuming your current directory is the project folder
+
+```
+$ docker pull golang:1.7
+$ docker build -t your-user/todo-api .
+$ docker run --name todo-api -p 8080:80 -d \
+-e PORT=80 \
+-e JWT_KEY=secret-key \
+-e JWT_ISSUER=anything \
+-e DB_HOST=postgres \
+-e DB_NAME=postgres \
+-e DB_USER=postgres \
+-e DB_SCHEMA=public \
+-e DB_PASSWORD=superpassword \
+-e DB_PORT=5432 \
+-e DB_SSLMODE=disable \
+your-user/todo-api/todo-api
+```
+
+expose port 8080 to connect to the API
+
+### Building Golang todo-api locally
+
+This is a better option if you want to modify the project and run the API after changes are made
+
+Assuming you have Golang locally installed and your current directory is the project folder
+
+```
+$ cp .env.example .env
+$ vi .env
+```
+
+Your .env file should look similar to this, change whatever is neccessary
+
+```
+# BASIC
+PORT=8080
+JWT_KEY=secret-key
+JWT_ISSUER=anything
+
+# DB - PostgreSQL
+DB_HOST=localhost
+DB_NAME=postgres
+DB_USER=postgres
+DB_SCHEMA=test
+DB_PASSWORD=superpassword
+DB_PORT=5432
+DB_SSLMODE=disable
+```
+
+Now run the API
+
+```
+// get dependencies
+$ go get ./
+
+// build and execute
+$ go build && ./todo-api
+
+// or install... if you have already setup $GOPATH/bin to your $PATH
+$ go install && todo-api
+```
