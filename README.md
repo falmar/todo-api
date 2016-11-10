@@ -219,6 +219,29 @@ Possibles responses:
 
 ### List
 
+**Filter**
+
+filter format: `filter_name:value`
+
+e.g: `GET end-point/todo/?filters=completed:true,title=first`
+
+Available filters:
+
+- completed
+
+**Sort**
+
+sort format: `updated_at:+|-`
+
+- \+ = descendant [SQL: DESC]
+- \- = ascendant [SQL: ASC]
+
+e.g: `GET end-point/todo/?sort=completed:+,title:-`
+
+Available sorts:
+
+- **not implemented yet**
+
 Request
 ```
 GET end-point/todo/?current_page=1&page_size=5

@@ -45,14 +45,25 @@ func (t Todo) getByID(id int64, db *sql.DB) (*Todo, error) {
 	return todo, nil
 }
 
-func (t Todo) getByUserID(userID int64, db *sql.DB, p *paging) ([]*Todo, error) {
+func (t Todo) getByUserID(db *sql.DB, userID int64, filters map[string]interface{}, p *paging) ([]*Todo, error) {
 	var count int64
+	var i int64 = 2
+	var filterWhere string
+	params := []interface{}{userID}
+	nFilters := len(filters)
+
+	for f, v := range filters {
+		params = append(params, v)
+		filterWhere += fmt.Sprintf(" AND %s = $%d", f, i)
+		i++
+	}
 
 	ssql := fmt.Sprintf(`SELECT COUNT(*) as rCount
 		FROM %s.todo t
-		WHERE t.user_id = $1`, os.Getenv("DB_SCHEMA"))
+		WHERE t.user_id = $1
+		%s`, os.Getenv("DB_SCHEMA"), filterWhere)
 
-	err := db.QueryRow(ssql, userID).Scan(&count)
+	err := db.QueryRow(ssql, params...).Scan(&count)
 
 	if err != nil {
 		return nil, err
@@ -62,9 +73,18 @@ func (t Todo) getByUserID(userID int64, db *sql.DB, p *paging) ([]*Todo, error) 
 
 	ssql = fmt.Sprintf(`SELECT t.id, t.title, t.completed, t.created_at, t.updated_at
 		FROM %s.todo t
-		WHERE t.user_id = $1 ORDER BY t.updated_at DESC LIMIT $2 OFFSET $3`, os.Getenv("DB_SCHEMA"))
+		WHERE t.user_id = $1
+		%s
+		ORDER BY t.updated_at DESC LIMIT $%d OFFSET $%d`,
+		os.Getenv("DB_SCHEMA"),
+		filterWhere,
+		nFilters+2,
+		nFilters+3,
+	)
 
-	rows, err := db.Query(ssql, userID, p.Max, p.Init)
+	params = append(params, p.Max, p.Init)
+
+	rows, err := db.Query(ssql, params...)
 
 	if err != nil {
 		return nil, err

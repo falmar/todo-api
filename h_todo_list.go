@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func todoListHandler(w http.ResponseWriter, r *http.Request) {
@@ -19,14 +20,18 @@ func todoListHandler(w http.ResponseWriter, r *http.Request) {
 		jsonErrorEncode(w, http.StatusForbidden, nil, nil)
 	}
 
-	page, _ := strconv.ParseInt(r.URL.Query().Get("current_page"), 10, 64)
-	maxPerPage, _ := strconv.ParseInt(r.URL.Query().Get("page_size"), 10, 64)
+	query := r.URL.Query()
+
+	page, _ := strconv.ParseInt(query.Get("current_page"), 10, 64)
+	maxPerPage, _ := strconv.ParseInt(query.Get("page_size"), 10, 64)
+
+	filters := parseTodoFilters(query.Get("filters"))
 
 	response := map[string]interface{}{}
 	todo := Todo{}
 	paging := &paging{CurrentPage: page, PageSize: maxPerPage}
 
-	todos, err := todo.getByUserID(claims.User.ID, postgres, paging)
+	todos, err := todo.getByUserID(postgres, claims.User.ID, filters, paging)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -57,4 +62,46 @@ func todoListHandler(w http.ResponseWriter, r *http.Request) {
 		jsonErrorEncode(w, http.StatusInternalServerError, nil, err)
 	}
 
+}
+
+func parseTodoFilters(filterString string) map[string]interface{} {
+	foundFilters := map[string]interface{}{}
+	allowedFilters := map[string]string{
+		"completed": "bool",
+	}
+
+	filters := strings.Split(filterString, ",")
+
+	getByType := func(str, t string) (interface{}, error) {
+		switch t {
+		case "bool":
+			return strconv.ParseBool(str)
+		default:
+			return str, nil
+		}
+
+	}
+
+	// loop splitted filters if any
+	for _, filter := range filters {
+
+		// loop allowed filters
+		for af, aft := range allowedFilters {
+
+			// check if is allowed
+			if strings.HasPrefix(filter, af) {
+				split := strings.SplitN(filter, ":", 2)
+
+				if len(split) == 2 {
+					if t, err := getByType(split[1], aft); err == nil {
+						foundFilters[af] = t
+					}
+				}
+
+			}
+		}
+
+	}
+
+	return foundFilters
 }
