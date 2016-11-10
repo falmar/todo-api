@@ -477,7 +477,7 @@ Assuming you are using docker...
 ```
 $ docker pull postgres:9.5
 $ docker run --name todo-api-postgres -e POSTGRES_PASSWORD=superpassword -d -p 5432:5432 postgres:9.5
-$ docker run -it --rm --link todo-api-postgres:postgres -e PGPASSWORD=superpassword postgres psql -h postgres:9.5 -U postgres
+$ docker run -it --rm --link todo-api-postgres:postgres -e PGPASSWORD=superpassword postgres:9.5 psql -h postgres -U postgres
 ```
 
 Expose port 5432 to connect to postgres if building the api locally
