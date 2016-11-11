@@ -6,6 +6,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -25,13 +26,23 @@ func todoListHandler(w http.ResponseWriter, r *http.Request) {
 	page, _ := strconv.ParseInt(query.Get("current_page"), 10, 64)
 	maxPerPage, _ := strconv.ParseInt(query.Get("page_size"), 10, 64)
 
-	filters := parseTodoFilters(query.Get("filters"))
+	filters := parseTodoFilters(query.Get("filters"), map[string]string{
+		"completed": "bool",
+	})
+
+	sorts := parseSort(query.Get("sort"), []string{
+		"completed",
+		"updated_at",
+		"created_at",
+		"title",
+		"id",
+	})
 
 	response := map[string]interface{}{}
 	todo := Todo{}
 	paging := &paging{CurrentPage: page, PageSize: maxPerPage}
 
-	todos, err := todo.getByUserID(postgres, claims.User.ID, filters, paging)
+	todos, err := todo.getByUserID(postgres, claims.User.ID, filters, sorts, paging)
 
 	if err != nil {
 		if err == sql.ErrNoRows {
@@ -64,11 +75,8 @@ func todoListHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func parseTodoFilters(filterString string) map[string]interface{} {
+func parseTodoFilters(filterString string, allowedFilters map[string]string) map[string]interface{} {
 	foundFilters := map[string]interface{}{}
-	allowedFilters := map[string]string{
-		"completed": "bool",
-	}
 
 	filters := strings.Split(filterString, ",")
 
@@ -104,4 +112,37 @@ func parseTodoFilters(filterString string) map[string]interface{} {
 	}
 
 	return foundFilters
+}
+
+func parseSort(sortString string, allowedSort []string) map[string]string {
+	foundSorts := map[string]string{}
+
+	sorts := strings.Split(sortString, ",")
+
+	getByValue := func(s string) (string, error) {
+		switch s {
+		case "+":
+			return "DESC", nil
+		case "-":
+			return "ASC", nil
+		default:
+			return "", errors.New("sort value format not valid")
+		}
+	}
+
+	for _, s := range sorts {
+		for _, as := range allowedSort {
+			if strings.HasPrefix(s, as) {
+				split := strings.SplitN(s, ":", 2)
+
+				if len(split) == 2 {
+					if sort, err := getByValue(split[1]); err == nil {
+						foundSorts[split[0]] = sort
+					}
+				}
+			}
+		}
+	}
+
+	return foundSorts
 }

@@ -238,9 +238,15 @@ sort format: `updated_at:+|-`
 
 e.g: `GET end-point/todo/?sort=completed:+,title:-`
 
+> NOTE: you need to ENCODE the url, using title:- will turn out as "title: ". Enconding the URL will ensure that it will be the plus symbol encoded such as "title:%2B"
+
 Available sorts:
 
-- **not implemented yet**
+- id
+- title
+- completed
+- created_at
+- updated_at
 
 Request
 ```
