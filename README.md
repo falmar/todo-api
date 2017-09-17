@@ -12,7 +12,8 @@ Simple TODO API with JWT Authentication
 
 ## API Documentation
 
-Current end-point: http://todo-api.dlavieri.com
+~Current end-point: http://todo-api.dlavieri.com~
+> NOTE: end-point is not longer live
 
 Requests and Responses will always be Content-Type: application/json
 
